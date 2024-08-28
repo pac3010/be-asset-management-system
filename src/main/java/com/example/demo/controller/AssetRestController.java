@@ -35,13 +35,14 @@ public class AssetRestController {
         if(assetTransaction != null){
             assetTransaction.setReqReturnTime(LocalDateTime.now());
             assetTransaction.setIsReturnApproved(false);
+            assetTransactionService.save(assetTransaction);
 
             String adminEmail = assetTransaction.getAdmin().getEmployee().getEmail();
             String subject = "Approval Return Request";
             String employeeName = userService.get(assetTransaction.getUser().getId()).getUsername();
             String message = employeeName + " has requested to return the asset. Please review and process the return.";
             emailService.sendEmail(adminEmail, subject, message);
-            return Utils.generateResponseEntity(HttpStatus.OK, "Return request has been sent, please wait for the approval", assetTransaction);
+            return Utils.generateResponseEntity(HttpStatus.OK, "Return request has been sent, please wait for the approval");
         }
         return Utils.generateResponseEntity(HttpStatus.OK, "Data not Found");
     }
