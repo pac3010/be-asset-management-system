@@ -1,7 +1,6 @@
 package com.example.demo.model;
 
 import java.time.LocalDate;
-import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -43,6 +42,7 @@ public class Employee {
     private String firstname;
 
     @Column
+    @Nullable
     private String middlename;
 
     @Column
@@ -66,14 +66,13 @@ public class Employee {
 
     @OneToOne(mappedBy = "employee")
     @JsonIgnore
-    private List<User> users;
+    private User user;
 
     public Employee() {
     }
 
     public Employee(Integer id, Department department, Role role, Employee manager, String firstname, String middlename,
-            String lastname, LocalDate dob, Integer gender, String email, String phone, String address,
-            List<User> users) {
+            String lastname, LocalDate dob, Integer gender, String email, String phone, String address) {
         this.id = id;
         this.department = department;
         this.role = role;
@@ -86,7 +85,6 @@ public class Employee {
         this.email = email;
         this.phone = phone;
         this.address = address;
-        this.users = users;
     }
 
     public Integer getId() {
@@ -185,12 +183,12 @@ public class Employee {
         this.address = address;
     }
 
-    public List<User> getUsers() {
-        return users;
+    public User getUsers() {
+        return user;
     }
 
-    public void setUsers(List<User> users) {
-        this.users = users;
+    public void setUsers(User user) {
+        this.user = user;
     }
 
     
