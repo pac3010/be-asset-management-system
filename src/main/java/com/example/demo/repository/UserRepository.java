@@ -7,4 +7,5 @@ import com.example.demo.model.User;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Integer> {
+    User findByGuid(String guid);
 }

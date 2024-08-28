@@ -31,15 +31,18 @@ public class User {
     private String guid;
 
     @Column
-    private Boolean is_verified;
+    private Boolean isVerified;
 
     public User() {
     }
 
-    public User(Integer id, String username, String password) {
+    public User(Integer id, Employee employee, String username, String password, String guid, Boolean isVerified) {
         this.id = id;
+        this.employee = employee;
         this.username = username;
         this.password = password;
+        this.guid = guid;
+        this.isVerified = isVerified;
     }
 
     public Integer getId() {
@@ -48,6 +51,14 @@ public class User {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public Employee getEmployee() {
+        return employee;
+    }
+
+    public void setEmployee(Employee employee) {
+        this.employee = employee;
     }
 
     public String getUsername() {
@@ -66,5 +77,23 @@ public class User {
         this.password = password;
     }
 
+    public String getGuid() {
+        return guid;
+    }
+
+    public void setGuid(String guid) {
+        this.guid = guid;
+    }
+
+    public Boolean getIsVerified() {
+        return isVerified;
+    }
+
+    public void setIsVerified(Boolean isVerified) {
+        this.isVerified = isVerified;
+    }
+
+
     
+
 }
