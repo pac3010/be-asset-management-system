@@ -33,7 +33,7 @@ public class Asset {
     private String name;
 
     @Column
-    private Integer damage_percentage;
+    private Integer damagePercentage;
 
     @OneToOne(mappedBy = "asset")
     @JsonIgnore
@@ -42,13 +42,13 @@ public class Asset {
     public Asset() {
     }
 
-    public Asset(Integer id, AssetType assetType, AssetStatus assetStatus, String name, Integer damage_percentage,
+    public Asset(Integer id, AssetType assetType, AssetStatus assetStatus, String name, Integer damagePercentage,
             AssetDetail assetDetail) {
         this.id = id;
         this.assetType = assetType;
         this.assetStatus = assetStatus;
         this.name = name;
-        this.damage_percentage = damage_percentage;
+        this.damagePercentage = damagePercentage;
         this.assetDetail = assetDetail;
     }
 
@@ -84,21 +84,23 @@ public class Asset {
         this.name = name;
     }
 
-    public Integer getDamage_percentage() {
-        return damage_percentage;
+    public Integer getDamagePercentage() {
+        return damagePercentage;
     }
 
-    public void setDamage_percentage(Integer damage_percentage) {
-        this.damage_percentage = damage_percentage;
+    public void setDamagePercentage(Integer damagePercentage) {
+        this.damagePercentage = damagePercentage;
     }
 
     public AssetDetail getAssetDetail() {
         return assetDetail;
     }
 
-    public void setAssetDetails(AssetDetail assetDetail) {
+    public void setAssetDetail(AssetDetail assetDetail) {
         this.assetDetail = assetDetail;
     }
+
+    
 
     
 }

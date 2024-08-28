@@ -22,24 +22,23 @@ public class AssetDetail {
     private Asset asset;
 
     @Column
-    private String component_name;
+    private String componentName;
 
     @Column
-    private Integer component_percentage;
+    private Integer componentPercentage;
 
     @Column
-    private Boolean is_broken;
+    private Boolean isBroken;
 
     public AssetDetail() {
     }
 
-    public AssetDetail(Integer id, Asset asset, String component_name, Integer component_percentage,
-            Boolean is_broken) {
+    public AssetDetail(Integer id, Asset asset, String componentName, Integer componentPercentage, Boolean isBroken) {
         this.id = id;
         this.asset = asset;
-        this.component_name = component_name;
-        this.component_percentage = component_percentage;
-        this.is_broken = is_broken;
+        this.componentName = componentName;
+        this.componentPercentage = componentPercentage;
+        this.isBroken = isBroken;
     }
 
     public Integer getId() {
@@ -58,28 +57,30 @@ public class AssetDetail {
         this.asset = asset;
     }
 
-    public String getComponent_name() {
-        return component_name;
+    public String getComponentName() {
+        return componentName;
     }
 
-    public void setComponent_name(String component_name) {
-        this.component_name = component_name;
+    public void setComponentName(String componentName) {
+        this.componentName = componentName;
     }
 
-    public Integer getComponent_percentage() {
-        return component_percentage;
+    public Integer getComponentPercentage() {
+        return componentPercentage;
     }
 
-    public void setComponent_percentage(Integer component_percentage) {
-        this.component_percentage = component_percentage;
+    public void setComponentPercentage(Integer componentPercentage) {
+        this.componentPercentage = componentPercentage;
     }
 
-    public Boolean getIs_broken() {
-        return is_broken;
+    public Boolean getIsBroken() {
+        return isBroken;
     }
 
-    public void setIs_broken(Boolean is_broken) {
-        this.is_broken = is_broken;
+    public void setIsBroken(Boolean isBroken) {
+        this.isBroken = isBroken;
     }
+
+    
     
 }

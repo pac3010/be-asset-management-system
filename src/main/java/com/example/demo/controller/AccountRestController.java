@@ -57,7 +57,7 @@ public class AccountRestController {
 
             String guid = UUID.randomUUID().toString();
             String username = registrationDTO.getFirstname().toLowerCase() + "." + registrationDTO.getLastname().toLowerCase();
-            User user = new User(null, employee, username, registrationDTO.getPassword(), guid, false);
+            User user = new User(null, employee, username, passwordEncoder.encode(registrationDTO.getPassword()), guid, false);
             userService.save(user);
 
             String subject = "Email Verification";
