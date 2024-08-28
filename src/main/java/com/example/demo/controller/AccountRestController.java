@@ -5,6 +5,7 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -41,6 +42,9 @@ public class AccountRestController {
    @Autowired
    private EmailService emailService;
 
+   @Autowired
+   private PasswordEncoder passwordEncoder;
+
    @PostMapping("/register")
     public ResponseEntity<Object> register(@RequestBody RegistrationDTO registrationDTO) {
         try {
@@ -51,7 +55,7 @@ public class AccountRestController {
 
             String guid = UUID.randomUUID().toString();
             String username = registrationDTO.getFirstname().toLowerCase() + "." + registrationDTO.getLastname().toLowerCase();
-            User user = new User(null, employee, username, registrationDTO.getPassword(), guid, false);
+            User user = new User(null, employee, username, passwordEncoder.encode(registrationDTO.getPassword()), guid, false);
             userService.save(user);
 
             String subject = "Email Verification";
