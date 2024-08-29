@@ -1,6 +1,5 @@
 package com.example.demo.model;
 
-import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -38,19 +37,19 @@ public class Asset {
 
     @OneToOne(mappedBy = "asset")
     @JsonIgnore
-    private List<AssetDetail> assetDetails;
+    private AssetDetail assetDetail;
 
     public Asset() {
     }
 
     public Asset(Integer id, AssetType assetType, AssetStatus assetStatus, String name, Integer damage_percentage,
-            List<AssetDetail> assetDetails) {
+            AssetDetail assetDetail) {
         this.id = id;
         this.assetType = assetType;
         this.assetStatus = assetStatus;
         this.name = name;
         this.damage_percentage = damage_percentage;
-        this.assetDetails = assetDetails;
+        this.assetDetail = assetDetail;
     }
 
     public Integer getId() {
@@ -93,12 +92,12 @@ public class Asset {
         this.damage_percentage = damage_percentage;
     }
 
-    public List<AssetDetail> getAssetDetails() {
-        return assetDetails;
+    public AssetDetail getAssetDetail() {
+        return assetDetail;
     }
 
-    public void setAssetDetails(List<AssetDetail> assetDetails) {
-        this.assetDetails = assetDetails;
+    public void setAssetDetails(AssetDetail assetDetail) {
+        this.assetDetail = assetDetail;
     }
 
     

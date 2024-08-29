@@ -17,11 +17,14 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column
+    @Column(name = "id")
     private Integer id;
 
     @Column
     private String name;
+
+    @Column
+    private Integer level;
 
     @OneToMany(mappedBy = "role")
     @JsonIgnore
@@ -30,9 +33,10 @@ public class Role {
     public Role() {
     }
 
-    public Role(Integer id, String name, List<Employee> employees) {
+    public Role(Integer id, String name, Integer level, List<Employee> employees) {
         this.id = id;
         this.name = name;
+        this.level = level;
         this.employees = employees;
     }
 
@@ -52,6 +56,14 @@ public class Role {
         this.name = name;
     }
 
+    public Integer getLevel() {
+        return level;
+    }
+
+    public void setLevel(Integer level) {
+        this.level = level;
+    }
+
     public List<Employee> getEmployees() {
         return employees;
     }
@@ -60,5 +72,6 @@ public class Role {
         this.employees = employees;
     }
 
+    
     
 }

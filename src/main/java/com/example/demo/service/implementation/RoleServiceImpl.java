@@ -10,7 +10,7 @@ import com.example.demo.repository.RoleRepository;
 import com.example.demo.service.RoleService;
 
 @Service
-public class RoleServiceImpl implements RoleService{
+public class RoleServiceImpl implements RoleService {
     @Autowired
     RoleRepository roleRepository;
 
@@ -35,5 +35,10 @@ public class RoleServiceImpl implements RoleService{
         roleRepository.deleteById(id);
         return roleRepository.findById(id).isEmpty();
     }
-    
+
+    @Override
+    public Role getRoleWithLowestLevel() {
+        return roleRepository.findRoleWithLowestLevel();
+    }
+
 }
