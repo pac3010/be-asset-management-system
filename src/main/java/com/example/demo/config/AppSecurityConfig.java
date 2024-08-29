@@ -38,7 +38,7 @@ public class AppSecurityConfig {
                             // .antMatchers("/account/welcome").authenticated()
                             // .antMatchers("/account/find-email").permitAll()
                             // .antMatchers("/account/role").authenticated()
-                            .antMatchers("api/account/register").permitAll()
+                            .antMatchers("api/account/register", "api/account/login", "api/account/verify/{guid}").permitAll()
                             .antMatchers("/api/account/**").permitAll()
                             .anyRequest().permitAll()
                             .and()
