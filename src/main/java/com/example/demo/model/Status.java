@@ -13,8 +13,8 @@ import javax.persistence.Table;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
-@Table(name = "tb_m_asset_status")
-public class AssetStatus {
+@Table(name = "tb_m_status")
+public class Status {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
@@ -23,16 +23,20 @@ public class AssetStatus {
     @Column
     private String name;
 
-    @OneToMany(mappedBy = "assetStatus")
+    @OneToMany(mappedBy = "status")
+    List<AssetTransaction> assetTransactions;
+
+    @OneToMany(mappedBy = "status")
     @JsonIgnore
     private List<Asset> assets;
 
-    public AssetStatus() {
+    public Status() {
     }
 
-    public AssetStatus(Integer id, String name, List<Asset> assets) {
+    public Status(Integer id, String name, List<AssetTransaction> assetTransactions, List<Asset> assets) {
         this.id = id;
         this.name = name;
+        this.assetTransactions = assetTransactions;
         this.assets = assets;
     }
 
@@ -52,6 +56,14 @@ public class AssetStatus {
         this.name = name;
     }
 
+    public List<AssetTransaction> getAssetTransactions() {
+        return assetTransactions;
+    }
+
+    public void setAssetTransactions(List<AssetTransaction> assetTransactions) {
+        this.assetTransactions = assetTransactions;
+    }
+
     public List<Asset> getAssets() {
         return assets;
     }
@@ -60,5 +72,6 @@ public class AssetStatus {
         this.assets = assets;
     }
 
-
+    
+    
 }

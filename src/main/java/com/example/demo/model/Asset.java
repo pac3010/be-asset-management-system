@@ -1,6 +1,8 @@
 package com.example.demo.model;
 
 
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -26,30 +28,30 @@ public class Asset {
     private AssetType assetType;
 
     @ManyToOne
-    @JoinColumn(name = "asset_status_id", referencedColumnName = "id")
-    private AssetStatus assetStatus;
+    @JoinColumn(name = "status_id", referencedColumnName = "id")
+    private Status status;
 
     @Column
     private String name;
 
     @Column
-    private Integer damage_percentage;
+    private String serial_number;
 
     @OneToOne(mappedBy = "asset")
     @JsonIgnore
-    private AssetDetail assetDetail;
+    private List<AssetTransaction> assetTransactions;
 
     public Asset() {
     }
 
-    public Asset(Integer id, AssetType assetType, AssetStatus assetStatus, String name, Integer damage_percentage,
-            AssetDetail assetDetail) {
+    public Asset(Integer id, AssetType assetType, Status status, String name, String serial_number,
+            List<AssetTransaction> assetTransactions) {
         this.id = id;
         this.assetType = assetType;
-        this.assetStatus = assetStatus;
+        this.status = status;
         this.name = name;
-        this.damage_percentage = damage_percentage;
-        this.assetDetail = assetDetail;
+        this.serial_number = serial_number;
+        this.assetTransactions = assetTransactions;
     }
 
     public Integer getId() {
@@ -68,12 +70,12 @@ public class Asset {
         this.assetType = assetType;
     }
 
-    public AssetStatus getAssetStatus() {
-        return assetStatus;
+    public Status getStatus() {
+        return status;
     }
 
-    public void setAssetStatus(AssetStatus assetStatus) {
-        this.assetStatus = assetStatus;
+    public void setStatus(Status status) {
+        this.status = status;
     }
 
     public String getName() {
@@ -84,21 +86,20 @@ public class Asset {
         this.name = name;
     }
 
-    public Integer getDamage_percentage() {
-        return damage_percentage;
+    public String getSerial_number() {
+        return serial_number;
     }
 
-    public void setDamage_percentage(Integer damage_percentage) {
-        this.damage_percentage = damage_percentage;
+    public void setSerial_number(String serial_number) {
+        this.serial_number = serial_number;
     }
 
-    public AssetDetail getAssetDetail() {
-        return assetDetail;
+    public List<AssetTransaction> getAssetTransactions() {
+        return assetTransactions;
     }
 
-    public void setAssetDetails(AssetDetail assetDetail) {
-        this.assetDetail = assetDetail;
+    public void setAssetTransactions(List<AssetTransaction> assetTransactions) {
+        this.assetTransactions = assetTransactions;
     }
 
-    
 }
