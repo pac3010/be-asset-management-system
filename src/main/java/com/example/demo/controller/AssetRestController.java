@@ -37,7 +37,7 @@ public class AssetRestController {
         AssetTransaction assetTransaction = assetTransactionService.get(transactionId);
         if(assetTransaction != null){
             assetTransaction.setReqReturnTime(LocalDateTime.now());
-            assetTransaction.setStatus(statusService.getIdByName("Waiting for manager approval"));
+            assetTransaction.setStatus(statusService.getIdByName("Waiting for return approval"));
             assetTransactionService.save(assetTransaction);
 
             String adminEmail = assetTransaction.getAdmin().getEmployee().getEmail();
