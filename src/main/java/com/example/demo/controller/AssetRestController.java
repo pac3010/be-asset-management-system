@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.handler.Utils;
 import com.example.demo.model.AssetTransaction;
-import com.example.demo.model.User;
 import com.example.demo.service.AssetTransactionService;
 import com.example.demo.service.EmailService;
+import com.example.demo.service.StatusService;
 import com.example.demo.service.UserService;
 
 @RestController
@@ -29,18 +29,21 @@ public class AssetRestController {
     @Autowired
     private EmailService emailService;
 
+    @Autowired
+    private StatusService statusService;
+
     @GetMapping("/request/return/{transactionId}")
     public ResponseEntity<Object> requestReturn(@PathVariable Integer transactionId){
         AssetTransaction assetTransaction = assetTransactionService.get(transactionId);
         if(assetTransaction != null){
             assetTransaction.setReqReturnTime(LocalDateTime.now());
-            assetTransaction.setIsReturnApproved(false);
+            assetTransaction.setStatus(statusService.getIdByName("Waiting for manager approval"));
             assetTransactionService.save(assetTransaction);
 
             String adminEmail = assetTransaction.getAdmin().getEmployee().getEmail();
             String subject = "Approval Return Request";
-            String employeeName = userService.get(assetTransaction.getUser().getId()).getUsername();
-            String message = employeeName + " has requested to return the asset. Please review and process the return.";
+            String employeeUname = userService.get(assetTransaction.getUser().getId()).getUsername();
+            String message = employeeUname + " has requested to return the asset. Please review and process the return.";
             emailService.sendEmail(adminEmail, subject, message);
             return Utils.generateResponseEntity(HttpStatus.OK, "Return request has been sent, please wait for the approval");
         }

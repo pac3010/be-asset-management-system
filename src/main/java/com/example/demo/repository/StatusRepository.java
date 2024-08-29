@@ -7,5 +7,5 @@ import com.example.demo.model.Status;
 
 @Repository
 public interface StatusRepository extends JpaRepository<Status, Integer>{
-    
+    Status findByName(String name);
 }
