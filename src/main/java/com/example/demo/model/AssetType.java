@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -31,13 +32,19 @@ public class AssetType {
     @JsonIgnore
     private List<AssetComponent> assetComponents;
 
+    @OneToMany(mappedBy = "assetType")
+    @JsonIgnore
+    private List<AssetComponent> assetComponents;
+
     public AssetType() {
     }
 
     public AssetType(Integer id, String name, List<Asset> assets, List<AssetComponent> assetComponents) {
+    public AssetType(Integer id, String name, List<Asset> assets, List<AssetComponent> assetComponents) {
         this.id = id;
         this.name = name;
         this.assets = assets;
+        this.assetComponents = assetComponents;
         this.assetComponents = assetComponents;
     }
 
@@ -69,7 +76,7 @@ public class AssetType {
         return assetComponents;
     }
 
-    public void setAssetComponents(List<AssetComponent> assetComponents) {
+    public void setAssetcComponents(List<AssetComponent> assetComponents) {
         this.assetComponents = assetComponents;
     }
 
