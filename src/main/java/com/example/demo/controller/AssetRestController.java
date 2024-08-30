@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -32,6 +33,7 @@ public class AssetRestController {
     @Autowired
     private StatusService statusService;
 
+    //Request return from borrower to admin.
     @GetMapping("/request/return/{transactionId}")
     public ResponseEntity<Object> requestReturn(@PathVariable Integer transactionId){
         AssetTransaction assetTransaction = assetTransactionService.get(transactionId);
@@ -49,4 +51,5 @@ public class AssetRestController {
         }
         return Utils.generateResponseEntity(HttpStatus.OK, "Data not Found");
     }
+
 }
