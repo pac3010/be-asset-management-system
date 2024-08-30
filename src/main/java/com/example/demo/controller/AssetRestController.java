@@ -80,5 +80,13 @@ public class AssetRestController {
         return Utils.generateResponseEntity(HttpStatus.OK, "Request Reject By Admin");
     }
 
-        
+
+    // Mock Rest API untuk Create Asset admin 
+    @PostMapping("createAsset")
+    public ResponseEntity<Object> createAsset() {
+        // save
+        return Utils.generateResponseEntity(HttpStatus.OK, "Asset created By Admin");
+    }
+
+    
 }
