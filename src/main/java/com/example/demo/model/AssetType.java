@@ -29,15 +29,16 @@ public class AssetType {
 
     @OneToMany(mappedBy = "assetType")
     @JsonIgnore
-    private List<AssetComponent> assetcComponents;
+    private List<AssetComponent> assetComponents;
 
     public AssetType() {
     }
 
-    public AssetType(Integer id, String name, List<Asset> assets) {
+    public AssetType(Integer id, String name, List<Asset> assets, List<AssetComponent> assetComponents) {
         this.id = id;
         this.name = name;
         this.assets = assets;
+        this.assetComponents = assetComponents;
     }
 
     public Integer getId() {
@@ -63,5 +64,15 @@ public class AssetType {
     public void setAssets(List<Asset> assets) {
         this.assets = assets;
     }
+
+    public List<AssetComponent> getAssetComponents() {
+        return assetComponents;
+    }
+
+    public void setAssetComponents(List<AssetComponent> assetComponents) {
+        this.assetComponents = assetComponents;
+    }
+
+    
     
 }
