@@ -32,14 +32,9 @@ public class AssetType {
     @JsonIgnore
     private List<AssetComponent> assetComponents;
 
-    @OneToMany(mappedBy = "assetType")
-    @JsonIgnore
-    private List<AssetComponent> assetComponents;
-
     public AssetType() {
     }
 
-    public AssetType(Integer id, String name, List<Asset> assets, List<AssetComponent> assetComponents) {
     public AssetType(Integer id, String name, List<Asset> assets, List<AssetComponent> assetComponents) {
         this.id = id;
         this.name = name;
