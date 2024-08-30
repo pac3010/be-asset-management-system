@@ -37,4 +37,8 @@ public class StatusServiceImpl implements StatusService{
         return statusRepository.findById(id).isEmpty();
     }
     
+    @Override
+    public Status getIdByName(String statusName) {
+        return statusRepository.findByName(statusName);
+    }
 }
