@@ -27,6 +27,10 @@ public class AssetType {
     @JsonIgnore
     private List<Asset> assets;
 
+    @OneToMany(mappedBy = "assetType")
+    @JsonIgnore
+    private List<AssetComponent> assetcComponents;
+
     public AssetType() {
     }
 
