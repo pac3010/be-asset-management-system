@@ -4,14 +4,12 @@ import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -38,10 +36,12 @@ public class AssetComponent {
     public AssetComponent() {
     }
 
-    public AssetComponent(Integer id, AssetType assetType, String name, List<DamageAssessment> damageAssessments) {
+    public AssetComponent(Integer id, AssetType assetType, String name, Integer damagePercentage,
+            List<DamageAssessment> damageAssessments) {
         this.id = id;
         this.assetType = assetType;
         this.name = name;
+        this.damagePercentage = damagePercentage;
         this.damageAssessments = damageAssessments;
     }
 
@@ -67,6 +67,14 @@ public class AssetComponent {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Integer getDamagePercentage() {
+        return damagePercentage;
+    }
+
+    public void setDamagePercentage(Integer damagePercentage) {
+        this.damagePercentage = damagePercentage;
     }
 
     public List<DamageAssessment> getDamageAssessments() {

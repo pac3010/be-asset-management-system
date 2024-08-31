@@ -19,11 +19,13 @@ import com.example.demo.model.Asset;
 import com.example.demo.model.AssetComponent;
 import com.example.demo.model.AssetTransaction;
 import com.example.demo.model.AssetType;
-import com.example.demo.model.dto.AssetAssessmentDTO;
+import com.example.demo.model.DamageAssessment;
+import com.example.demo.model.Status;
 import com.example.demo.model.dto.AssetComponentDTO;
+import com.example.demo.model.dto.DamageAssessmentDTO;
 import com.example.demo.service.AssetComponentService;
-import com.example.demo.service.AssetService;
 import com.example.demo.service.AssetTransactionService;
+import com.example.demo.service.DamageAssessmentService;
 import com.example.demo.service.EmailService;
 import com.example.demo.service.StatusService;
 import com.example.demo.service.UserService;
@@ -46,6 +48,9 @@ public class AssetRestController {
     @Autowired
     private AssetComponentService assetComponentService;
 
+    @Autowired
+    private DamageAssessmentService damageAssessmentService;
+
     // Request return from borrower to admin.
     @GetMapping("/request/return/{transactionId}")
     public ResponseEntity<Object> requestReturn(@PathVariable Integer transactionId) {
@@ -67,6 +72,20 @@ public class AssetRestController {
         return Utils.generateResponseEntity(HttpStatus.OK, "Data not Found");
     }
 
+    // Accept return request
+    @GetMapping("/request/return/{transactionId}/accept")
+    public ResponseEntity<Object> acceptReturn(@PathVariable Integer transactionId) {
+        AssetTransaction assetTransaction = assetTransactionService.get(transactionId);
+        if (assetTransaction != null) {
+            Status status = statusService.getIdByName("Waiting for component assessment");
+            assetTransaction.setStatus(status);
+            assetTransactionService.save(assetTransaction);
+            return Utils.generateResponseEntity(HttpStatus.OK, "Request Success, The status has been changed");
+        }
+        return Utils.generateResponseEntity(HttpStatus.OK, "Data not Found");
+    }
+
+    //Getting components
     @GetMapping("/assessment/{transactionId}")
     public ResponseEntity<Object> components(@PathVariable Integer transactionId) {
         AssetTransaction assetTransaction = assetTransactionService.get(transactionId);
@@ -83,25 +102,47 @@ public class AssetRestController {
         return Utils.generateResponseEntity(HttpStatus.OK, "Data not Found");
     }
 
-    @PostMapping("/assessment/{transactionId}")
-    public ResponseEntity<Object> performAssessment(@PathVariable Integer transactionId,
-            @RequestBody AssetAssessmentDTO assetAssessmentDTO) {
+    //Assessing component's asset by admin
+    @PostMapping("/assessment/{transactionId}/submit")
+    public ResponseEntity<Object> submitAssessment(@PathVariable Integer transactionId,
+            @RequestBody List<DamageAssessmentDTO> assessmentDTOs) {
         AssetTransaction assetTransaction = assetTransactionService.get(transactionId);
         if (assetTransaction == null) {
-            return Utils.generateResponseEntity(HttpStatus.BAD_REQUEST, "Invalid transaction ID.");
+            return Utils.generateResponseEntity(HttpStatus.BAD_REQUEST, "Transaction not found.");
         }
 
-        Asset asset = assetTransaction.getAsset();
-        AssetType assetType = asset.getAssetType();
-        Integer assetTypeId = assetType.getId();
+        double totalDamagePercentage = 0.0;
+        int count = 0;
 
-        List<AssetComponent> components = assetComponentService.getComponentAsset(assetTypeId);
-        List<AssetComponentDTO> assetComponentsDTO = components.stream()
-                .map(AssetComponentDTO::new)
-                .collect(Collectors.toList());
+        for (DamageAssessmentDTO assessmentDTO : assessmentDTOs) {
+            AssetComponent assetComponent = assetComponentService.get(assessmentDTO.getAssetComponentId());
+            if (assetComponent == null) {
+                return Utils.generateResponseEntity(HttpStatus.BAD_REQUEST, "Invalid component ID.");
+            }
 
-        
+            DamageAssessment assessment = new DamageAssessment();
+            assessment.setAssetTransaction(assetTransaction);
+            assessment.setAssetComponent(assetComponent);
+            assessment.setIsBroken(assessmentDTO.getIsBroken());
 
+            if (assessmentDTO.getIsBroken()) {
+                totalDamagePercentage += assetComponent.getDamagePercentage();
+            }
+            count++;
+            damageAssessmentService.save(assessment);
+        }
+
+        double averageDamagePercentage = (count > 0) ? (totalDamagePercentage / count) : 0.0;
+
+        if (averageDamagePercentage > 10) {
+            Status status = statusService.getIdByName("Damaged upon return");
+            assetTransaction.setStatus(status);
+        } else {
+            Status status = statusService.getIdByName("Returned");
+            assetTransaction.setStatus(status);
+        }
+        assetTransaction.setReturnTime(LocalDateTime.now());
+        assetTransactionService.save(assetTransaction);
         return Utils.generateResponseEntity(HttpStatus.OK, "Assessment completed successfully.");
     }
 
