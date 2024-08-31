@@ -69,7 +69,7 @@ public class AssetType {
         return assetComponents;
     }
 
-    public void setAssetcComponents(List<AssetComponent> assetComponents) {
+    public void setAssetComponents(List<AssetComponent> assetComponents) {
         this.assetComponents = assetComponents;
     }
 
