@@ -10,12 +10,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.handler.Utils;
 import com.example.demo.model.Asset;
+
+import com.example.demo.model.User;
+import com.example.demo.service.AssetService;
+import com.example.demo.service.AssetTransactionService;
+import com.example.demo.service.AssetTypeService;
 import com.example.demo.model.AssetComponent;
 import com.example.demo.model.AssetTransaction;
 import com.example.demo.model.AssetType;
@@ -26,6 +32,7 @@ import com.example.demo.model.dto.DamageAssessmentDTO;
 import com.example.demo.service.AssetComponentService;
 import com.example.demo.service.AssetTransactionService;
 import com.example.demo.service.DamageAssessmentService;
+
 import com.example.demo.service.EmailService;
 import com.example.demo.service.StatusService;
 import com.example.demo.service.UserService;
@@ -38,18 +45,74 @@ public class AssetRestController {
 
     @Autowired
     private UserService userService;
-
-    @Autowired
-    private EmailService emailService;
-
+   
     @Autowired
     private StatusService statusService;
+
+    @Autowired
+    private AssetService assetService;
+
+    @Autowired
+    private AssetTypeService assetTypeService;
+  
+    @Autowired
+    private EmailService emailService;
 
     @Autowired
     private AssetComponentService assetComponentService;
 
     @Autowired
     private DamageAssessmentService damageAssessmentService;
+
+// Mock Rest API untuk create request peminjaman
+    @PostMapping("createRequest/{id}")
+    public ResponseEntity<Object> save(@RequestBody AssetTransaction assetTransaction, @PathVariable Integer id){
+
+         assetTransaction.setUser(userService.get(id));
+ 
+        String assetName = assetTransaction.getAsset().getName();
+        assetTransaction.setAsset(assetService.getIdByName(assetName));
+
+        assetTransaction.setReqBorrowTime(LocalDateTime.now());
+
+        assetTransaction.setStatus(statusService.getIdByName("Waiting For Manager Approval"));
+        assetTransaction.setAdmin(userService.get(1));
+        assetTransactionService.save(assetTransaction);
+        return ResponseEntity.ok("Asset Create Request!");
+    }
+
+    // // Mock Rest API untuk admin menerima request
+    @PostMapping("/approve/{id}")
+    public ResponseEntity<Object> approveTransaction(@PathVariable Integer id) {
+        Status approvedStatusId = statusService.getIdByName("Approved");
+        assetTransactionService.updateStatus(id, approvedStatusId.getId());
+        return Utils.generateResponseEntity(HttpStatus.OK, "Request Acc By Admin");
+    }   
+    
+
+    // Mock Rest API untuk admin menolak request
+    @PostMapping("/reject/{id}")
+    public ResponseEntity<Object> rejectTranscation(@PathVariable Integer id) {
+        Status approvedStatusId = statusService.getIdByName("Request Rejecteed by Admin");
+        assetTransactionService.updateStatus(id, approvedStatusId.getId());
+        return Utils.generateResponseEntity(HttpStatus.OK, "Request Reject By Admin");
+    }
+
+
+    // Mock Rest API untuk Create Asset admin 
+     @PostMapping("/create")
+    public ResponseEntity<Object> createAsset(@RequestBody Asset asset) {
+        boolean saved = assetService.save(asset);
+        return Utils.generateResponseEntity(HttpStatus.CREATED, "Asset created successfully", saved);
+    }
+
+
+    // API to update an existing Asset
+    @PostMapping("/edit/{id}")
+    public ResponseEntity<Object> editAsset(@PathVariable Integer id, @RequestBody Asset assetDetails) {
+        Asset updatedAsset = assetService.updateAsset(id, assetDetails);
+        return Utils.generateResponseEntity(HttpStatus.OK, "Asset updated successfully", updatedAsset);
+    }
 
     // Request return from borrower to admin.
     @GetMapping("/request/return/{transactionId}")
@@ -145,5 +208,6 @@ public class AssetRestController {
         assetTransactionService.save(assetTransaction);
         return Utils.generateResponseEntity(HttpStatus.OK, "Assessment completed successfully.");
     }
+
 
 }
