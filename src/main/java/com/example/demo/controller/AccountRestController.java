@@ -62,11 +62,6 @@ public class AccountRestController {
    @Autowired
    private PasswordEncoder passwordEncoder;
 
-   @Autowired
-   private AssetTransactionService assetTransactionService;
-   
-    @Autowired
-    private StatusService statusService;
 
    @PostMapping("/register")
     public ResponseEntity<Object> register(@RequestBody RegistrationDTO registrationDTO) {
@@ -178,31 +173,7 @@ public class AccountRestController {
         return authorities;
     }
 
-    // Mock Rest API untuk create request peminjaman
-    @PostMapping("createRequest")
-    public ResponseEntity<Object> save(@RequestBody AssetTransaction assetTransaction){
-        assetTransaction.setReqBorrowTime(LocalDateTime.now());
-        assetTransaction.setStatus(statusService.getIdByName("Waiting For Manager Approval"));
-        assetTransactionService.save(assetTransaction);
-        return ResponseEntity.ok("Asset Create Request!");
-    }
-
-    // // Mock Rest API untuk admin menerima request
-    @PostMapping("/approve/{id}")
-    public ResponseEntity<Object> approveTransaction(@PathVariable Integer id) {
-        Status approvedStatusId = statusService.getIdByName("Approved");
-        assetTransactionService.updateStatus(id, approvedStatusId.getId());
-        return Utils.generateResponseEntity(HttpStatus.OK, "Request Acc By Admin");
-    }   
     
-
-    // Mock Rest API untuk admin menolak request
-    @PostMapping("/reject/{id}")
-    public ResponseEntity<Object> rejectTranscation(@PathVariable Integer id) {
-        Status approvedStatusId = statusService.getIdByName("Request Rejecteed by Admin");
-        assetTransactionService.updateStatus(id, approvedStatusId.getId());
-        return Utils.generateResponseEntity(HttpStatus.OK, "Request Reject By Admin");
-    }
 
 
 }
