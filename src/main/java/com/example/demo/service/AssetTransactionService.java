@@ -7,3 +7,4 @@ public interface AssetTransactionService extends GenericService<AssetTransaction
     AssetTransaction updateStatus(Integer id, Integer statusId);
     
 }
+    
