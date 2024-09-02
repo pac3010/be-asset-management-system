@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.model.AssetTransaction;
+import com.example.demo.model.Status;
 import com.example.demo.repository.AssetTransactionRepository;
 import com.example.demo.service.AssetTransactionService;
 
@@ -36,5 +37,31 @@ public class AssetTransactionServiceImpl implements AssetTransactionService{
         assetTransactionRepository.deleteById(id);
         return assetTransactionRepository.findById(id).isEmpty();
     }
+
+    
+    @Override
+    public AssetTransaction updateStatus(Integer id, Integer statusId) {
+        // Find the AssetTransaction by ID
+        AssetTransaction assetTransaction = assetTransactionRepository.findById(id).orElse(null);
+    
+        // Check if the AssetTransaction was found
+        if (assetTransaction != null) {
+            // Create a new Status object and set the statusId
+            Status status = new Status();
+            status.setId(statusId);
+            
+            // Set the new status to the AssetTransaction
+            assetTransaction.setStatus(status);
+            
+            // Save the updated AssetTransaction back to the database
+            return assetTransactionRepository.save(assetTransaction);
+        } else {
+            // Handle the case where the asset transaction is not found
+            return null; // Or throw an exception, depending on your use case
+        }
+    }
+    
+    
+    
     
 }

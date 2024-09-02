@@ -9,6 +9,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -36,9 +37,10 @@ public class Asset {
     @Column
     private String serial_number;
 
-    @OneToOne(mappedBy = "asset")
+    @OneToMany(mappedBy = "asset")
     @JsonIgnore
-    private AssetTransaction assetTransaction;
+    private List<AssetTransaction> assetTransactions;
+
 
     public Asset() {
     }

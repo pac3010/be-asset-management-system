@@ -2,31 +2,44 @@ package com.example.demo.controller;
 
 import java.util.UUID;
 
+import java.util.Collection;    
+import java.util.LinkedList;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-
+import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.handler.Utils;
+import com.example.demo.model.Asset;
+import com.example.demo.model.AssetTransaction;
 import com.example.demo.model.Department;
 import com.example.demo.model.Employee;
 import com.example.demo.model.Role;
+import com.example.demo.model.Status;
 import com.example.demo.model.User;
 import com.example.demo.model.dto.RegistrationDTO;
+import com.example.demo.service.AssetTransactionService;
 import com.example.demo.service.DepartmentService;
 import com.example.demo.service.EmailService;
 import com.example.demo.service.EmployeeService;
 import com.example.demo.service.RoleService;
+import com.example.demo.service.StatusService;
 import com.example.demo.service.UserService;
+import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("api/account")
@@ -48,6 +61,7 @@ public class AccountRestController {
 
    @Autowired
    private PasswordEncoder passwordEncoder;
+
 
    @PostMapping("/register")
     public ResponseEntity<Object> register(@RequestBody RegistrationDTO registrationDTO) {
@@ -118,4 +132,48 @@ public class AccountRestController {
         userService.save(validatedUser);
         return Utils.generateResponseEntity(HttpStatus.OK, "Password successfully has been changed");
     }
+
+    
+    @PostMapping("login")
+    public ResponseEntity<Object> login(@RequestBody User userLogin) {
+        User authenticatedUser = userService.authenticate(userLogin.getUsername(), userLogin.getPassword());
+    
+        if (authenticatedUser != null && !authenticatedUser.getIsVerified()) {
+            return Utils.generateResponseEntity(HttpStatus.FORBIDDEN, "Not Verified Yet!");
+        }
+    
+        if (authenticatedUser == null) {
+            return Utils.generateResponseEntity(HttpStatus.UNAUTHORIZED, "Credentials Don't Match Any Records!");
+        }
+    
+        try {
+            org.springframework.security.core.userdetails.User user = new org.springframework.security.core.userdetails.User(
+                authenticatedUser.getId().toString(),
+                "",
+                getAuthorities(authenticatedUser.getEmployee().getRole().getName())
+            );
+    
+            PreAuthenticatedAuthenticationToken authenticationToken = new PreAuthenticatedAuthenticationToken(
+                user,
+                "",
+                user.getAuthorities()
+            );
+    
+            SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+    
+            return Utils.generateResponseEntity(HttpStatus.OK, "Login Success! " + authenticatedUser.getEmployee().getRole().getName());
+        } catch (Exception e) {
+            return Utils.generateResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, "An error occurred during login.");
+        }
+    }
+    
+    private static Collection<GrantedAuthority> getAuthorities(String role) {
+        final List<GrantedAuthority> authorities = new LinkedList<>();
+        authorities.add(new SimpleGrantedAuthority(role));
+        return authorities;
+    }
+
+    
+
+
 }
