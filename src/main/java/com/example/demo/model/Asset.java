@@ -1,6 +1,5 @@
 package com.example.demo.model;
 
-
 import java.util.List;
 
 import javax.persistence.Column;
@@ -39,6 +38,7 @@ public class Asset {
     private String serial_number;
 
     @OneToMany(mappedBy = "asset")
+    @JsonIgnore
     private List<AssetTransaction> assetTransactions;
 
     public Asset() {
