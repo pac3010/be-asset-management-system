@@ -1,5 +1,7 @@
 package com.example.demo.model;
 
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -7,7 +9,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
@@ -25,17 +27,22 @@ public class AssetComponent {
     @Column
     private String name;
 
-    @OneToOne(mappedBy = "assetComponent")
-    private DamagePercentage damagePercentage;
+    @Column
+    private Integer damagePercentage;
+
+    @OneToMany(mappedBy = "assetComponent")
+    private List<DamageAssessment> damageAssessments;
 
     public AssetComponent() {
     }
 
-    public AssetComponent(Integer id, AssetType assetType, String name, DamagePercentage damagePercentage) {
+    public AssetComponent(Integer id, AssetType assetType, String name, Integer damagePercentage,
+            List<DamageAssessment> damageAssessments) {
         this.id = id;
         this.assetType = assetType;
         this.name = name;
         this.damagePercentage = damagePercentage;
+        this.damageAssessments = damageAssessments;
     }
 
     public Integer getId() {
@@ -62,13 +69,23 @@ public class AssetComponent {
         this.name = name;
     }
 
-    public DamagePercentage getDamagePercentage() {
+    public Integer getDamagePercentage() {
         return damagePercentage;
     }
 
-    public void setDamagePercentage(DamagePercentage damagePercentage) {
+    public void setDamagePercentage(Integer damagePercentage) {
         this.damagePercentage = damagePercentage;
     }
+
+    public List<DamageAssessment> getDamageAssessments() {
+        return damageAssessments;
+    }
+
+    public void setDamageAssessments(List<DamageAssessment> damageAssessments) {
+        this.damageAssessments = damageAssessments;
+    }
+
+    
 
     
 }

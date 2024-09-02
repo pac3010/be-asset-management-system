@@ -3,6 +3,7 @@ package com.example.demo.service.implementation;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.stereotype.Service;
 
 import com.example.demo.model.AssetComponent;
@@ -35,6 +36,11 @@ public class AssetComponentServiceImpl implements AssetComponentService{
     public Boolean delete(Integer id) {
         assetComponentRepository.deleteById(id);
         return assetComponentRepository.findById(id).isEmpty();
+    }
+
+    @Override
+    public List<AssetComponent> getComponentAsset(Integer assetTypeId) {
+        return assetComponentRepository.findByAssetTypeId(assetTypeId);
     }
     
 }

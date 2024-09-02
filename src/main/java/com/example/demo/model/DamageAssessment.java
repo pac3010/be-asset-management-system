@@ -22,8 +22,8 @@ public class DamageAssessment {
     private AssetTransaction assetTransaction;
 
     @ManyToOne
-    @JoinColumn(name = "damage_percentage_id", referencedColumnName = "id")
-    private DamagePercentage damagePercentage;
+    @JoinColumn(name = "asset_component_id", referencedColumnName = "id")
+    private AssetComponent assetComponent;
 
     @Column
     private Boolean isBroken ;
@@ -31,11 +31,11 @@ public class DamageAssessment {
     public DamageAssessment() {
     }
 
-    public DamageAssessment(Integer id, AssetTransaction assetTransaction, DamagePercentage damagePercentage,
+    public DamageAssessment(Integer id, AssetTransaction assetTransaction, AssetComponent assetComponent,
             Boolean isBroken) {
         this.id = id;
         this.assetTransaction = assetTransaction;
-        this.damagePercentage = damagePercentage;
+        this.assetComponent = assetComponent;
         this.isBroken = isBroken;
     }
 
@@ -55,12 +55,12 @@ public class DamageAssessment {
         this.assetTransaction = assetTransaction;
     }
 
-    public DamagePercentage getDamagePercentage() {
-        return damagePercentage;
+    public AssetComponent getAssetComponent() {
+        return assetComponent;
     }
 
-    public void setDamagePercentage(DamagePercentage damagePercentage) {
-        this.damagePercentage = damagePercentage;
+    public void setAssetComponent(AssetComponent assetComponent) {
+        this.assetComponent = assetComponent;
     }
 
     public Boolean getIsBroken() {
@@ -70,6 +70,8 @@ public class DamageAssessment {
     public void setIsBroken(Boolean isBroken) {
         this.isBroken = isBroken;
     }
+
+    
 
     
 }
