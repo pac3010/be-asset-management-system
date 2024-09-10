@@ -2,7 +2,7 @@ package com.example.demo.controller;
 
 import java.util.UUID;
 
-import java.util.Collection;    
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,36 +44,49 @@ import java.time.LocalDateTime;
 @RestController
 @RequestMapping("api/account")
 public class AccountRestController {
-   @Autowired
-   private EmployeeService employeeService;
+    @Autowired
+    private EmployeeService employeeService;
 
-   @Autowired
-   private RoleService roleService;
+    @Autowired
+    private RoleService roleService;
 
-   @Autowired
-   private DepartmentService departmentService;
+    @Autowired
+    private DepartmentService departmentService;
 
-   @Autowired
-   private UserService userService;
+    @Autowired
+    private UserService userService;
 
-   @Autowired
-   private EmailService emailService;
+    @Autowired
+    private EmailService emailService;
 
-   @Autowired
-   private PasswordEncoder passwordEncoder;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
+    @GetMapping("/departments")
+    public ResponseEntity<Object> getDepartments() {
+        List<Department> departments = departmentService.get();
+        if (departments != null) {
+            return Utils.generateResponseEntity(HttpStatus.OK, "Got department list", departments);
+        }
+        return Utils.generateResponseEntity(HttpStatus.OK, "Failed to got departments list");
+    }
 
-   @PostMapping("/register")
+    @PostMapping("/register")
     public ResponseEntity<Object> register(@RequestBody RegistrationDTO registrationDTO) {
         try {
             Role defaultRole = roleService.getRoleWithLowestLevel();
             Department department = departmentService.get(registrationDTO.getDepartment_id());
-            Employee employee = new Employee(null, department, defaultRole, null, registrationDTO.getFirstname(), registrationDTO.getMiddlename(), registrationDTO.getLastname(), registrationDTO.getDob(), registrationDTO.getGender(), registrationDTO.getEmail(), registrationDTO.getPhone(), registrationDTO.getAddress());
+            Employee employee = new Employee(null, department, defaultRole, null, registrationDTO.getFirstname(),
+                    registrationDTO.getMiddlename(), registrationDTO.getLastname(), registrationDTO.getDob(),
+                    registrationDTO.getGender(), registrationDTO.getEmail(), registrationDTO.getPhone(),
+                    registrationDTO.getAddress());
             employeeService.save(employee);
 
             String guid = UUID.randomUUID().toString();
-            String username = registrationDTO.getFirstname().toLowerCase() + "." + registrationDTO.getLastname().toLowerCase();
-            User user = new User(null, employee, username, passwordEncoder.encode(registrationDTO.getPassword()), guid, false);
+            String username = registrationDTO.getFirstname().toLowerCase() + "."
+                    + registrationDTO.getLastname().toLowerCase();
+            User user = new User(null, employee, username, passwordEncoder.encode(registrationDTO.getPassword()), guid,
+                    false);
             userService.save(user);
 
             String subject = "Email Verification";
@@ -133,47 +146,42 @@ public class AccountRestController {
         return Utils.generateResponseEntity(HttpStatus.OK, "Password successfully has been changed");
     }
 
-    
     @PostMapping("login")
     public ResponseEntity<Object> login(@RequestBody User userLogin) {
         User authenticatedUser = userService.authenticate(userLogin.getUsername(), userLogin.getPassword());
-    
+
         if (authenticatedUser != null && !authenticatedUser.getIsVerified()) {
             return Utils.generateResponseEntity(HttpStatus.FORBIDDEN, "Not Verified Yet!");
         }
-    
+
         if (authenticatedUser == null) {
             return Utils.generateResponseEntity(HttpStatus.UNAUTHORIZED, "Credentials Don't Match Any Records!");
         }
-    
+
         try {
             org.springframework.security.core.userdetails.User user = new org.springframework.security.core.userdetails.User(
-                authenticatedUser.getId().toString(),
-                "",
-                getAuthorities(authenticatedUser.getEmployee().getRole().getName())
-            );
-    
+                    authenticatedUser.getId().toString(),
+                    "",
+                    getAuthorities(authenticatedUser.getEmployee().getRole().getName()));
+
             PreAuthenticatedAuthenticationToken authenticationToken = new PreAuthenticatedAuthenticationToken(
-                user,
-                "",
-                user.getAuthorities()
-            );
-    
+                    user,
+                    "",
+                    user.getAuthorities());
+
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-    
-            return Utils.generateResponseEntity(HttpStatus.OK, "Login Success! " + authenticatedUser.getEmployee().getRole().getName());
+
+            return Utils.generateResponseEntity(HttpStatus.OK,
+                    "Login Success! " + authenticatedUser.getEmployee().getRole().getName());
         } catch (Exception e) {
             return Utils.generateResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, "An error occurred during login.");
         }
     }
-    
+
     private static Collection<GrantedAuthority> getAuthorities(String role) {
         final List<GrantedAuthority> authorities = new LinkedList<>();
         authorities.add(new SimpleGrantedAuthority(role));
         return authorities;
     }
-
-    
-
 
 }
