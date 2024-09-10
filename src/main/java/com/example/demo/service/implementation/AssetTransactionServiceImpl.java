@@ -1,12 +1,16 @@
 package com.example.demo.service.implementation;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.demo.model.Asset;
 import com.example.demo.model.AssetTransaction;
 import com.example.demo.model.Status;
+import com.example.demo.model.dto.AssetTransactionIdBorrowTimeDTO;
+import com.example.demo.repository.AssetRepository;
 import com.example.demo.repository.AssetTransactionRepository;
 import com.example.demo.service.AssetTransactionService;
 
@@ -15,6 +19,10 @@ public class AssetTransactionServiceImpl implements AssetTransactionService{
 
     @Autowired
     AssetTransactionRepository assetTransactionRepository;
+
+    @Autowired
+    private AssetRepository assetRepository;
+    
 
     @Override
     public List<AssetTransaction> get() {
@@ -25,7 +33,7 @@ public class AssetTransactionServiceImpl implements AssetTransactionService{
     public AssetTransaction get(Integer id) {
         return assetTransactionRepository.findById(id).orElse(null);
     }
-
+    
     @Override
     public Boolean save(AssetTransaction entity) {
         assetTransactionRepository.save(entity);
@@ -60,8 +68,50 @@ public class AssetTransactionServiceImpl implements AssetTransactionService{
             return null; // Or throw an exception, depending on your use case
         }
     }
+
+    @Override
+    public List<AssetTransactionIdBorrowTimeDTO> getIdAndBorrowTime() {
+        return assetTransactionRepository.findAll().stream()
+            .filter(assetTransaction -> 
+                "Waiting For Manager Approval".equals(assetTransaction.getStatus().getName()) || 
+                "Request Rejected by Manager".equals(assetTransaction.getStatus().getName())
+            ) // Filter by the desired statuses
+            .map(assetTransaction -> new AssetTransactionIdBorrowTimeDTO(
+                assetTransaction.getId(),
+                assetTransaction.getReqBorrowTime(),
+                assetTransaction.getUser().getUsername(), // Get username from User
+                assetTransaction.getStatus().getName(), // Get status name
+                assetTransaction.getAsset() != null ? assetTransaction.getAsset().getName() : null // Get asset name (not asset type name)
+            ))
+            .collect(Collectors.toList());
+    }
+    
+
+    @Override
+    public List<AssetTransactionIdBorrowTimeDTO> getIdAndBorrowTimeBorrower(Integer userId) {
+        return assetTransactionRepository.findAll().stream()
+            .filter(assetTransaction -> 
+                assetTransaction.getUser().getId().equals(userId) && // Filter by user ID
+                (
+                    "Waiting For Manager Approval".equals(assetTransaction.getStatus().getName()) || 
+                    "Request Rejected by Manager".equals(assetTransaction.getStatus().getName()) ||
+                    "Approved".equals(assetTransaction.getStatus().getName()) || 
+                    "Request Rejected by Admin".equals(assetTransaction.getStatus().getName())
+                )
+            ) // Filter by the desired statuses 
+            .map(assetTransaction -> new AssetTransactionIdBorrowTimeDTO(
+                assetTransaction.getId(),
+                assetTransaction.getReqBorrowTime(),
+                assetTransaction.getUser().getUsername(), // Get username from User
+                assetTransaction.getStatus().getName(), // Get status name
+                assetTransaction.getAsset() != null ? assetTransaction.getAsset().getName() : null
+            ))
+            .collect(Collectors.toList());
+    }
+    
+    }
     
     
     
     
-}
+

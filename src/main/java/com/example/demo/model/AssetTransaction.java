@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -32,7 +33,7 @@ public class AssetTransaction {
     private User admin;
 
     @ManyToOne
-    @JoinColumn(name = "asset_id", referencedColumnName = "id")
+    @JoinColumn(name = "asset_id", referencedColumnName = "id",  nullable = false)
     private Asset asset;
 
     @ManyToOne

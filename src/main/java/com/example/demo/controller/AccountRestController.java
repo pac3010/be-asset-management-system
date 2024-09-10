@@ -2,9 +2,14 @@ package com.example.demo.controller;
 
 import java.util.UUID;
 
-import java.util.Collection;    
+import javax.servlet.http.HttpSession;
+
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,35 +18,30 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.handler.Utils;
-import com.example.demo.model.Asset;
-import com.example.demo.model.AssetTransaction;
 import com.example.demo.model.Department;
 import com.example.demo.model.Employee;
 import com.example.demo.model.Role;
-import com.example.demo.model.Status;
 import com.example.demo.model.User;
 import com.example.demo.model.dto.RegistrationDTO;
-import com.example.demo.service.AssetTransactionService;
 import com.example.demo.service.DepartmentService;
 import com.example.demo.service.EmailService;
 import com.example.demo.service.EmployeeService;
 import com.example.demo.service.RoleService;
-import com.example.demo.service.StatusService;
 import com.example.demo.service.UserService;
-import java.time.LocalDateTime;
 
 @RestController
+@CrossOrigin
 @RequestMapping("api/account")
 public class AccountRestController {
    @Autowired
@@ -135,15 +135,15 @@ public class AccountRestController {
 
     
     @PostMapping("login")
-    public ResponseEntity<Object> login(@RequestBody User userLogin) {
+    public ResponseEntity<Object> login(@RequestBody User userLogin, HttpSession session) {
         User authenticatedUser = userService.authenticate(userLogin.getUsername(), userLogin.getPassword());
-    
-        if (authenticatedUser != null && !authenticatedUser.getIsVerified()) {
-            return Utils.generateResponseEntity(HttpStatus.FORBIDDEN, "Not Verified Yet!");
-        }
-    
+
         if (authenticatedUser == null) {
             return Utils.generateResponseEntity(HttpStatus.UNAUTHORIZED, "Credentials Don't Match Any Records!");
+        }
+    
+        if (!authenticatedUser.getIsVerified()) {
+            return Utils.generateResponseEntity(HttpStatus.FORBIDDEN, "Not Verified Yet!");
         }
     
         try {
@@ -161,11 +161,60 @@ public class AccountRestController {
     
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
     
-            return Utils.generateResponseEntity(HttpStatus.OK, "Login Success! " + authenticatedUser.getEmployee().getRole().getName());
+            // Store the authenticated user's ID, employee ID, and role ID in the session
+            session.setAttribute("userId", authenticatedUser.getId());
+            session.setAttribute("employeeId", authenticatedUser.getEmployee().getId());
+            session.setAttribute("roleId", authenticatedUser.getEmployee().getRole().getId());
+            session.setAttribute("username", authenticatedUser.getUsername());
+    
+            // Determine the redirect URL based on the user's role
+            String role = authenticatedUser.getEmployee().getRole().getName();
+            String redirectUrl;
+    
+            switch (role) {
+                case "Manajer":
+                    redirectUrl = "/dashboardManager";
+                    break;
+                case "Admin":
+                    redirectUrl = "/cardList";
+                    break;
+                case "Staff":
+                    redirectUrl = "/cardList";
+                    break;
+                default:
+                    redirectUrl = "/home";
+            }    
+    
+            // Return the redirect URL in the response
+            return Utils.generateResponseEntity(HttpStatus.OK, "Login Success! Redirecting to: " + redirectUrl);
         } catch (Exception e) {
             return Utils.generateResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, "An error occurred during login.");
         }
     }
+    
+
+    @GetMapping("session")
+    public ResponseEntity<Object> getSessionData(HttpSession session) {
+        Object userId = session.getAttribute("userId");
+        Object employeeId = session.getAttribute("employeeId");
+        Object roleId = session.getAttribute("roleId"); 
+        Object username = session.getAttribute("username"); // Consistent with 'userName'
+    
+        if (userId != null) {
+            Map<String, Object> sessionData = new HashMap<>();
+            sessionData.put("userId", userId);
+            sessionData.put("employeeId", employeeId);
+            sessionData.put("roleId", roleId);
+            sessionData.put("username", username); // Use 'userName' instead of 'username'
+    
+            return new ResponseEntity<>(sessionData, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(Map.of("error", "No user is logged in."), HttpStatus.UNAUTHORIZED);
+        }
+    }
+    
+
+    // Additional methods like getAuthorities() can be included here...
     
     private static Collection<GrantedAuthority> getAuthorities(String role) {
         final List<GrantedAuthority> authorities = new LinkedList<>();
@@ -174,6 +223,14 @@ public class AccountRestController {
     }
 
     
-
+    @PostMapping("logout")
+public ResponseEntity<Object> logout(HttpSession session) {
+    try {
+        session.invalidate(); // Invalidate the session
+        return ResponseEntity.ok().body("Logout successful");
+    } catch (Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred during logout");
+    }
+}
 
 }

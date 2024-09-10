@@ -6,8 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.model.Asset;
-import com.example.demo.model.AssetType;
-import com.example.demo.model.Status;
 import com.example.demo.repository.AssetRepository;
 import com.example.demo.service.AssetService;
 
