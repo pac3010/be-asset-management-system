@@ -44,7 +44,7 @@ public class AssetServiceImpl implements AssetService{
                 .orElseThrow(() -> new RuntimeException("Asset not found"));
 
         asset.setName(assetDetails.getName());
-        asset.setSerial_number(assetDetails.getSerial_number());
+        asset.setSerialNumber(assetDetails.getSerialNumber());
         asset.setAssetType(assetDetails.getAssetType());
         asset.setStatus(assetDetails.getStatus());
 
