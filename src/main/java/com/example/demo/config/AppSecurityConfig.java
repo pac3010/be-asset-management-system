@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -34,23 +35,24 @@ public class AppSecurityConfig {
                 try {
                     auth
                             .antMatchers("/").permitAll()
-                            .antMatchers("/account/**").permitAll()
+                            .antMatchers("/account/**", "/account/verify/**").permitAll()
                             // .antMatchers("/account/welcome").authenticated()
                             // .antMatchers("/account/find-email").permitAll()
                             // .antMatchers("/account/role").authenticated()
-                            .antMatchers("api/account/register", "api/account/login", "api/account/verify/{guid}").permitAll()
+                            .antMatchers("api/account/register", "api/account/login", "api/account/verify/{guid}", "api/account/session").permitAll()
                             .antMatchers("/api/account/**").permitAll()
                             .anyRequest().permitAll()
                             .and()
                             .formLogin()
-                            .loginPage("/account/formlogin")
+                            .loginPage("/account/login")
                             .and()
                             .httpBasic()
                             .and()
                             .logout()
                             .logoutUrl("/account/logout")
                             .logoutSuccessUrl("/account/formlogin")
-                            .permitAll();
+                            .permitAll()
+                            .and();
                             
 
                 } catch (Exception e) {
@@ -82,5 +84,7 @@ public class AppSecurityConfig {
 
   //rest template: media untuk melakukan consume api melalui java.
   //cors ->  cross origin request sharing
+
+  
 
 }

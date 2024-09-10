@@ -10,7 +10,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -35,7 +34,7 @@ public class Asset {
     private String name;
 
     @Column
-    private String serial_number;
+    private String serialNumber;
 
     @OneToMany(mappedBy = "asset")
     @JsonIgnore
@@ -44,14 +43,12 @@ public class Asset {
     public Asset() {
     }
 
-    public Asset(Integer id, AssetType assetType, Status status, String name, String serial_number,
-            List<AssetTransaction> assetTransactions) {
+    public Asset(Integer id, AssetType assetType, Status status, String name, String serialNumber) {
         this.id = id;
         this.assetType = assetType;
         this.status = status;
         this.name = name;
-        this.serial_number = serial_number;
-        this.assetTransactions = assetTransactions;
+        this.serialNumber = serialNumber;
     }
 
     public Integer getId() {
@@ -86,12 +83,12 @@ public class Asset {
         this.name = name;
     }
 
-    public String getSerial_number() {
-        return serial_number;
+    public String getSerialNumber() {
+        return serialNumber;
     }
 
-    public void setSerial_number(String serial_number) {
-        this.serial_number = serial_number;
+    public void setSerialNumber(String serialNumber) {
+        this.serialNumber = serialNumber;
     }
 
     public List<AssetTransaction> getAssetTransactions() {
